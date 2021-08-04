@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ex-1 ANF</title>
+    <link rel="stylesheet" type="text/css"href="style.css">
+  </head>
+<body>
+<div id ="mainCont"></div>
+<p id ="content"></p>
+<div class="pcontent">
+<script>
+let obj,url='https://5dc588200bbd050014fb8ae1.mockapi.io/assessment'
+function fetchData(url)
+{
+fetch(url).then(response => response.json()).then(data => {
+obj ={data};
+createHtml(obj)});}
+function createHtml(ourData){
+let rawTemplate= document.getElementById("handleb").innerHTML;
+let compiledTemplate = Handlebars.compile(rawTemplate);
+let ourGeneratedHTML = compiledTemplate(ourData);
+let userContainer = document.getElementById("mainCont");
+ userContainer.innerHTML = ourGeneratedHTML;
+}
+fetchData(url);
+</script>
+<script src = "https://twitter.github.io/typeahead.js/js/handlebars.js"></script>
+<script id ="handleb" type ="text/x-handlebars-template">
+{{#each data}}
+<ul id="ul_top_hypers">
+<li>ID: {{id}}</li>
+<li>Name:{{name}}</li>
+<li>Created Date :{{createdAt}}</li>
+<li>Avatar: <img src="{{avatar}}"></li>
+</ul><hr/>
+{{/each}}
+</script>
+</body>
+</html>
