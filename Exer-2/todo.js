@@ -25,12 +25,6 @@ var createNewTaskElement = function (taskString, arr) {
   listItem.appendChild(editButton);
   listItem.appendChild(deleteButton);
   SaveLocalTodos(taskString);
-  //if (taskString) {
-  //return listItem;
-  //} else {
-  // alert("Please add a task");
-  // return;
-  //}
 };
 
 var addTask = function () {
