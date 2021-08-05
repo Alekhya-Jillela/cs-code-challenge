@@ -6,7 +6,9 @@ html body {
 }
 
 html body .container {
-  display: block;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
   margin: 100px auto 0;
 }
 
