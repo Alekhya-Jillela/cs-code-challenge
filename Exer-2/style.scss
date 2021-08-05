@@ -73,7 +73,7 @@ html body input#new-task {
   width: 318px;
 }
 
-html body p > button :hover {
+.additionbutton:hover {
   color: #0fc57c;
 }
 
@@ -109,7 +109,7 @@ html body li > input[type="text"] {
   width: 226px;
 }
 
-html body li > .delete :hover {
+.delete:hover {
   color: #cf2323;
 }
 
