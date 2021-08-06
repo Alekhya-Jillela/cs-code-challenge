@@ -1,3 +1,11 @@
+const SET_ITEM = "set";
+const SET_DELETE = "delete";
+const SET_COMPLETE = "complete";
+const SET_INCOMPLETE = "incomplete";
+const SET_UPDATE = "updtae";
+var SET_STORAGE_TODO = "todo";
+var SET_STORAGE_COMPLETED = "completed";
+
 var taskInput = document.getElementById("new-task");
 var addButton = document.getElementsByTagName("button")[0];
 var incompleteTasksHolder = document.getElementById("incomplete-tasks");
@@ -24,109 +32,49 @@ var createNewTaskElement = function (taskString, arr) {
   listItem.appendChild(editInput);
   listItem.appendChild(editButton);
   listItem.appendChild(deleteButton);
-  SaveLocalTodos(taskString);
+
+  return listItem;
 };
 
-var addTask = function () {
+var addTask = function (storageValue) {
   var listItemName = taskInput.value;
-  listItem = createNewTaskElement(listItemName);
-  if (listItem) {
-    incompleteTasksHolder.appendChild(listItem);
+  if (listItemName.trim() == "") {
+    taskInput.classList.add("error");
+    return;
   } else {
+    taskInput.classList.remove("error");
   }
-
+  listItem = createNewTaskElement(listItemName);
+  console.log(listItemName);
+  setLocalStorage(SET_ITEM, SET_STORAGE_TODO, listItemName);
+  incompleteTasksHolder.appendChild(listItem);
+  console.log(listItem);
   bindTaskEvents(listItem, taskCompleted);
   taskInput.value = "";
 };
 
-//event listeners
-document.addEventListener("DOMContentLoaded", getTodos);
-addButton.addEventListener("click", addTask);
-
-// key board accesibility
-
-taskInput.addEventListener("keyup", function (event) {
-  event.preventDefault();
-  if (event.keyCode === 13) {
-    addButton.click();
-  }
-});
-
-// Local storage
-
-// function to save the tasks
-function SaveLocalTodos(todo) {
-  let todos;
-
-  if (localStorage.getItem("todos") === null) {
-    todos = [];
-  } else {
-    todos = JSON.parse(localStorage.getItem("todos"));
-  }
-  if (todo) {
-    todos.push(todo);
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }
-}
-// function to get tasks from local storage
-function getTodos() {
-  let todos;
-  if (localStorage.getItem("todos") === null) {
-    todos = [];
-  } else {
-    todos = JSON.parse(localStorage.getItem("todos"));
-  }
-  todos.forEach((todo) => {
-    listItem = document.createElement("li");
-    checkBox = document.createElement("input");
-    label = document.createElement("label");
-    editInput = document.createElement("input");
-    editButton = document.createElement("button");
-    deleteButton = document.createElement("button");
-
-    checkBox.type = "checkbox";
-    checkBox.onchange = taskCompleted;
-    editInput.type = "text";
-    editButton.innerText = "Edit";
-    editButton.className = "edit";
-    editButton.onclick = editTask;
-    deleteButton.innerText = "Delete";
-    deleteButton.className = "delete";
-    deleteButton.onclick = deleteTask;
-    label.innerText = todo;
-
-    listItem.appendChild(checkBox);
-    listItem.appendChild(label);
-    listItem.appendChild(editInput);
-    listItem.appendChild(editButton);
-    listItem.appendChild(deleteButton);
-
-    incompleteTasksHolder.appendChild(listItem);
-  });
-}
-// function to remove tasks from local storage
-function removeTodos(todo) {
-  let todos;
-  if (localStorage.getItem("todos") === null) {
-    todos = [];
-  } else {
-    todos = JSON.parse(localStorage.getItem("todos"));
-  }
-  console.log(todo);
-  const todoIndex = todo.children[1].innerText;
-  todos.splice(todos.indexOf(todoIndex), 1);
-  localStorage.setItem("todos", JSON.stringify(todos));
-}
-
 var editTask = function () {
   var listItem = this.parentNode;
-
   var editInput = listItem.querySelectorAll("input[type=text")[0];
-
+  var containsClass = listItem.classList.contains("editMode");
   var label = listItem.querySelector("label");
+  if (containsClass) {
+    var listItemName = editInput.value;
+    if (listItemName.trim() == "") {
+      editInput.classList.add("error");
+      return;
+    } else {
+      editInput.classList.remove("error");
+      setLocalStorage(
+        SET_UPDATE,
+        SET_STORAGE_TODO,
+        editInput.value,
+        label.innerText
+      );
+    }
+  }
   var button = listItem.getElementsByTagName("button")[0];
 
-  var containsClass = listItem.classList.contains("editMode");
   if (containsClass) {
     label.innerText = editInput.value;
     button.innerText = "Edit";
@@ -141,20 +89,34 @@ var editTask = function () {
 var deleteTask = function (el) {
   var listItem = this.parentNode;
   var ul = listItem.parentNode;
-  removeTodos(listItem);
   ul.removeChild(listItem);
+  setLocalStorage(
+    SET_DELETE,
+    SET_STORAGE_TODO,
+    listItem.querySelector("label").innerText
+  );
 };
 
 var taskCompleted = function (el) {
   var listItem = this.parentNode;
   completedTasksHolder.appendChild(listItem);
   bindTaskEvents(listItem, taskIncomplete);
+  setLocalStorage(
+    SET_COMPLETE,
+    SET_STORAGE_TODO,
+    listItem.querySelector("label").innerText
+  );
 };
 
 var taskIncomplete = function () {
   var listItem = this.parentNode;
   incompleteTasksHolder.appendChild(listItem);
   bindTaskEvents(listItem, taskCompleted);
+  setLocalStorage(
+    SET_INCOMPLETE,
+    SET_STORAGE_TODO,
+    listItem.querySelector("label").innerText
+  );
 };
 
 var bindTaskEvents = function (taskListItem, checkBoxEventHandler, cb) {
@@ -164,11 +126,219 @@ var bindTaskEvents = function (taskListItem, checkBoxEventHandler, cb) {
   editButton.onclick = editTask;
   deleteButton.onclick = deleteTask;
   checkBox.onchange = checkBoxEventHandler;
+  checkBox.onkeypress = function (e) {
+    if ((e.keyCode ? e.keyCode : e.which) == 13) {
+      checkBox.click();
+    }
+  };
 };
+
+addButton.addEventListener("click", addTask);
+
 for (var i = 0; i < incompleteTasksHolder.children.length; i++) {
   bindTaskEvents(incompleteTasksHolder.children[i], taskCompleted);
 }
 
 for (var i = 0; i < completedTasksHolder.children.length; i++) {
   bindTaskEvents(completedTasksHolder.children[i], taskIncomplete);
+}
+var toDoItem = [];
+var completedItem = [];
+
+function setLocalStorage(opertation, name, value, oldvalue = "") {
+  if (typeof Storage !== "undefined") {
+    if (opertation == SET_ITEM) {
+      var tasks = getLocalstorage();
+      var updatedtasks = [
+        ...tasks,
+        {
+          name: value,
+          completed: false,
+          editmode: false,
+          default: false,
+          deleted: false,
+        },
+      ];
+      //localStorage.setItem("tasks", JSON.stringify(updatedtasks));
+      setLocalstorage(updatedtasks);
+    } else if (opertation == SET_DELETE) {
+      getTheStoredTasks()(value, "deleted", true);
+    } else if (opertation == SET_COMPLETE) {
+      getTheStoredTasks()(value, "completed", true);
+    } else if (opertation == SET_INCOMPLETE) {
+      getTheStoredTasks()(value, "completed", false);
+    } else if (opertation == SET_UPDATE) {
+      var tasks = getLocalstorage();
+      tasks.find((val) => val.name == oldvalue).deleted = true;
+      var updatedtasks = [
+        ...tasks,
+        {
+          name: value,
+          completed: false,
+          editmode: false,
+          default: false,
+          deleted: false,
+        },
+      ];
+      setLocalstorage(updatedtasks);
+    }
+  } else {
+    document.getElementById("result").innerHTML =
+      "Sorry, your browser does not support Web Storage...";
+  }
+}
+
+document.addEventListener("DOMContentLoaded", function (event) {
+  var incompleteTasksHolder = document.getElementById("incomplete-tasks");
+  var completedTasksHolder = document.getElementById("completed-tasks");
+
+  if (typeof Storage !== "undefined" && localStorage.getItem("tasks") != null) {
+    incompleteTasksHolder.innerHTML = "";
+    completedTasksHolder.innerHTML = "";
+
+    var todo = getLocalstorage();
+    if (todo) {
+      todoFiltered = todo.filter(
+        (val) => val.completed == false && val.deleted == false
+      );
+      todoFiltered.map((val) => {
+        listItem = createNewTaskElement(val.name);
+        incompleteTasksHolder.appendChild(listItem);
+        bindTaskEvents(listItem, taskCompleted);
+      });
+
+      completed = todo.filter(
+        (val) => val.completed == true && val.deleted == false
+      );
+      completed.map((val) => {
+        var completedCont = `<li><input type="checkbox" tabindex="0" checked><label>${val.name}</label><input type="text"><button class="edit">Edit</button><button class="delete">Delete</button></li>`;
+
+        var HTMLStr = stringToHTML(completedCont);
+        completedTasksHolder.appendChild(HTMLStr);
+        bindTaskEvents(HTMLStr, taskIncomplete);
+      });
+    }
+  } else {
+    console.log("localstorage not available");
+  }
+
+  if (getLocalstorage() == null) {
+    var tasks = [];
+    for (var i = 0; i < incompleteTasksHolder.children.length; i++) {
+      if (incompleteTasksHolder.children[i].classList.contains("editMode")) {
+        tasks = [
+          ...tasks,
+          {
+            name: document
+              .getElementById("incomplete-tasks")
+              .children[i].querySelector("label").innerText,
+            completed: false,
+            editmode: true,
+            default: true,
+            deleted: false,
+          },
+        ];
+        setLocalstorage(tasks);
+      } else {
+        tasks = [
+          ...tasks,
+          {
+            name: document
+              .getElementById("incomplete-tasks")
+              .children[i].querySelector("label").innerText,
+            completed: false,
+            editmode: false,
+            default: true,
+            deleted: false,
+          },
+        ];
+        setLocalstorage(tasks);
+      }
+    }
+
+    //complete task holder
+
+    for (var i = 0; i < completedTasksHolder.children.length; i++) {
+      if (completedTasksHolder.children[i].classList.contains("editMode")) {
+        tasks = [
+          ...tasks,
+          {
+            name: completedTasksHolder.children[i].querySelector("label")
+              .innerText,
+            completed: true,
+            editmode: true,
+            default: true,
+            deleted: false,
+          },
+        ];
+        setLocalstorage(tasks);
+      } else {
+        tasks = [
+          ...tasks,
+          {
+            name: completedTasksHolder.children[i].querySelector("label")
+              .innerText,
+            completed: true,
+            editmode: false,
+            default: true,
+            deleted: false,
+          },
+        ];
+        setLocalstorage(tasks);
+      }
+    }
+  } else {
+    var tasks = getLocalstorage();
+    var removeItem = [];
+    for (var i = 0; i < incompleteTasksHolder.children.length; i++) {
+      var listItem = incompleteTasksHolder.children[i];
+      var taskText = listItem.querySelector("label").innerText;
+
+      if (
+        tasks.findIndex((a) => a.name == taskText && a.completed == true) != -1
+      ) {
+        removeItem.push(listItem);
+        console.log("a", removeItem);
+      }
+    }
+    for (var j = 0; j < removeItem.length; j++) {
+      removeItem[j].remove();
+    }
+
+    var removeItemCompleted = [];
+    for (var i = 0; i < completedTasksHolder.children.length; i++) {
+      var listItem = completedTasksHolder.children[i];
+      var taskText = listItem.querySelector("label").innerText;
+      if (
+        tasks.findIndex((a) => a.name == taskText && a.completed == false) != -1
+      ) {
+        removeItemCompleted.push(listItem);
+        console.log(removeItemCompleted);
+        console.log("a", a);
+      }
+    }
+    for (var j = 0; j < removeItemCompleted.length; j++) {
+      removeItemCompleted[j].remove();
+    }
+  }
+});
+
+var stringToHTML = function (str) {
+  var parser = new DOMParser();
+  var doc = parser.parseFromString(str, "text/html");
+  console.log(doc.body.getElementsByTagName("li")[0]);
+  return doc.body.getElementsByTagName("li")[0];
+};
+function getTheStoredTasks() {
+  var tasks = getLocalstorage();
+  return (value, node, valuetobe) => {
+    tasks.find((val) => val.name == value)[node] = valuetobe;
+    setLocalstorage(tasks);
+  };
+}
+function setLocalstorage(tasks) {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+function getLocalstorage() {
+  return JSON.parse(localStorage.getItem("tasks"));
 }
