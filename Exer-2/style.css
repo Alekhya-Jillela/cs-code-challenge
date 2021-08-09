@@ -10,6 +10,8 @@ html body .container {
   display: -ms-flexbox;
   display: flex;
   margin: 0 auto;
+  -ms-flex-pack: distribute;
+      justify-content: space-around;
 }
 
 html body ul {

@@ -1,4 +1,4 @@
-function initializeClosure() {
+function initializeCounter() {
   const SET_ITEM = "set";
   const SET_DELETE = "delete";
   const SET_COMPLETE = "complete";
@@ -349,5 +349,5 @@ function initializeClosure() {
     return JSON.parse(localStorage.getItem("tasks"));
   }
 }
-var demoCall = initializeClosure();
-demoCall();
+var counter = initializeCounter();
+counter();

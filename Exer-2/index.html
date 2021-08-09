@@ -13,7 +13,7 @@
                <label id="new-task-label" for="new-task">
                <b>Add Item</b>
                </label>
-               <input id="new-task" type="text" required="true">
+               <input id="new-task" type="text" aria-label="addTask" required="true">
                <button class ="additionbutton">Add</button>
             </p>
             </fieldset>
@@ -23,7 +23,7 @@
             </h3>
             <ul id="incomplete-tasks">
                <li>
-                  <input type="checkbox" tabindex="0" aria-checked="false">
+                  <input type="checkbox" tabindex="0" aria-label="billsInput" aria-checked="false">
                   <label>Pay Bills</label>
                   <input id ="roll-input" type="text" required ="true">
                   <!--below onclick is not working for empty edit task submission-->
@@ -31,7 +31,7 @@
                   <button class="delete">Delete</button>
                </li>
                <li class="editMode">
-                  <input type="checkbox" tabindex="0" aria-checked="false">
+                  <input type="checkbox" tabindex="0" aria-label="shoppingInput"aria-checked="false">
                   <label>Go Shopping</label>
                   <input type="text" value="Go Shopping" required="true" >
                   <button class="edit" >Save</button>
@@ -45,7 +45,7 @@
             </h3>
             <ul id="completed-tasks">
                <li>
-                  <input type="checkbox" tabindex="0" checked  aria-checked="true">
+                  <input type="checkbox" tabindex="0" checked aria-label="doctorInput" aria-checked="true">
                   <label>See the Doctor</label>
                   <input type="text" required="true">
                   <button class="edit">Edit</button>
