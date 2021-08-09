@@ -35,10 +35,10 @@ fetchData(url);
 <script id ="handleb" type ="text/x-handlebars-template">
 {{#each data}}
 <ul id="ul_top_hypers">
-<li>ID: {{id}}</li>
-<li>Name:{{name}}</li>
+  <li>Avatar: <img src="{{avatar}}"></li>
+  <li>ID: {{id}}</li>
 <li>Created Date :{{createdAt}}</li>
-<li>Avatar: <img src="{{avatar}}"></li>
+<li>Name:{{name}}</li>
 </ul><hr/>
 {{/each}}
 </script>
