@@ -1,3 +1,7 @@
+var taskInput = document.getElementById("new-task");
+var addButton = document.getElementsByTagName("button")[0];
+var incompleteTasksHolder = document.getElementById("incomplete-tasks");
+var completedTasksHolder = document.getElementById("completed-tasks");
 const SET_ITEM = "set";
 const SET_DELETE = "delete";
 const SET_COMPLETE = "complete";
@@ -5,12 +9,6 @@ const SET_INCOMPLETE = "incomplete";
 const SET_UPDATE = "updtae";
 var SET_STORAGE_TODO = "todo";
 var SET_STORAGE_COMPLETED = "completed";
-
-var taskInput = document.getElementById("new-task");
-var addButton = document.getElementsByTagName("button")[0];
-var incompleteTasksHolder = document.getElementById("incomplete-tasks");
-var completedTasksHolder = document.getElementById("completed-tasks");
-
 var createNewTaskElement = function (taskString, arr) {
   listItem = document.createElement("li");
   checkBox = document.createElement("input");
@@ -20,18 +18,17 @@ var createNewTaskElement = function (taskString, arr) {
   deleteButton = document.createElement("button");
 
   checkBox.type = "checkbox";
+  listItem.appendChild(checkBox);
   editInput.type = "text";
+  listItem.appendChild(label);
   editButton.innerText = "Edit";
+  listItem.appendChild(editInput);
   editButton.className = "edit";
+  listItem.appendChild(editButton);
   deleteButton.innerText = "Delete";
+  listItem.appendChild(deleteButton);
   deleteButton.className = "delete";
   label.innerText = taskString;
-
-  listItem.appendChild(checkBox);
-  listItem.appendChild(label);
-  listItem.appendChild(editInput);
-  listItem.appendChild(editButton);
-  listItem.appendChild(deleteButton);
 
   return listItem;
 };
@@ -118,6 +115,7 @@ var taskIncomplete = function () {
     listItem.querySelector("label").innerText
   );
 };
+//already given code
 
 var bindTaskEvents = function (taskListItem, checkBoxEventHandler, cb) {
   var checkBox = taskListItem.querySelectorAll("input[type=checkbox]")[0];
@@ -144,7 +142,7 @@ for (var i = 0; i < completedTasksHolder.children.length; i++) {
 }
 var toDoItem = [];
 var completedItem = [];
-
+//local storage function
 function setLocalStorage(opertation, name, value, oldvalue = "") {
   if (typeof Storage !== "undefined") {
     if (opertation == SET_ITEM) {
@@ -183,8 +181,7 @@ function setLocalStorage(opertation, name, value, oldvalue = "") {
       setLocalstorage(updatedtasks);
     }
   } else {
-    document.getElementById("result").innerHTML =
-      "Sorry, your browser does not support Web Storage...";
+    document.getElementById("result").innerHTML = "Not possible";
   }
 }
 
