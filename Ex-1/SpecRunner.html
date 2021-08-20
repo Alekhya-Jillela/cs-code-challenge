@@ -16,7 +16,7 @@
     <script src="lib/jasmine-3.8.0/boot.js"></script>
 
     <script>
-      describe("Testing API", () => {
+      describe("Unit test for API", () => {
         let info = {};
         beforeEach((done) => {
           fetch("https://5dc588200bbd050014fb8ae1.mockapi.io/assessment")
@@ -26,7 +26,7 @@
               done();
             });
         });
-        it("Should have data", () => {
+        it("url should have some data", () => {
           expect(info.length).not.toBe(0);
         });
       });

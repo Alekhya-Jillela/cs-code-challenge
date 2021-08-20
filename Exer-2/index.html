@@ -1,59 +1,36 @@
 <!DOCTYPE html>
 <html>
-   <head>
-      <title>Todo list App</title>
-      <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
-      <link href="style.css" rel="stylesheet">
-   </head>
-   <body>
-      <div class="container">
-         <form id="todolistForm" onsubmit="return false">
-            <fieldset>
-            <p>
-               <label id="new-task-label" for="new-task">
-               <b>Add Item</b>
-               </label>
-               <input id="new-task" type="text" aria-label="addTask" required="true">
-               <button class ="additionbutton">Add</button>
-            </p>
-            </fieldset>
-            <fieldset>
-            <h3>
-               <b>Todo</b>
-            </h3>
-            <ul id="incomplete-tasks">
-               <li>
-                  <input type="checkbox" tabindex="0" aria-label="billsInput" aria-checked="false">
-                  <label>Pay Bills</label>
-                  <input id ="roll-input" type="text" required ="true">
-                  <button class="edit" onClick="return document.getElementById('roll-input').value !=''">Edit</button>
-                  <button class="delete">Delete</button>
-               </li>
-               <li class="editMode">
-                  <input type="checkbox" tabindex="0" aria-label="shoppingInput"aria-checked="false">
-                  <label>Go Shopping</label>
-                  <input type="text" value="Go Shopping" required="true" >
-                  <button class="edit" >Save</button>
-                  <button class="delete" >Delete</button>
-               </li>
-            </ul>
-            </fieldset>
-            <fieldset>
-            <h3>
-               <b>Completed</b>
-            </h3>
-            <ul id="completed-tasks">
-               <li>
-                  <input type="checkbox" tabindex="0" checked aria-label="doctorInput" aria-checked="true">
-                  <label>See the Doctor</label>
-                  <input type="text" required="true">
-                  <button class="edit">Edit</button>
-                  <button class="delete">Delete</button>
-               </li>
-            </ul>
-         </fieldset>
-      </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+
+    <title>Todo list App</title>
+    <link
+      href="http://fonts.googleapis.com/css?family=Lato:300,400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <form>
+        <label id="new-task-label" for="new-task" aria-label="Add Item">
+          Add Item
+        </label>
+        <input id="new-task" type="text" placeholder="To Do" required />
+        <button>Add</button>
       </form>
-      <script type="text/javascript" src="todo.js"></script>
-   </body>
+
+      <h3 aria-label="Todo">Todo</h3>
+      <ul id="incomplete-tasks"></ul>
+
+      <h3 aria-label="Completed">Completed</h3>
+      <ul id="completed-tasks"></ul>
+    </div>
+    <script type="text/javascript" src="todo.js"></script>
+  </body>
 </html>

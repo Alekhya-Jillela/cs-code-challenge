@@ -1,79 +1,112 @@
 (function () {
+  let features = {
+    onload: function () {
+      if ("incompleteTasks" in localStorage) {
+        incompleteList = JSON.parse(localStorage.getItem("incompleteTasks"));
+      } else {
+        localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
+      }
+      for (let i = 0; i < incompleteList.length; i++) {
+        var listItem = createNewTaskElement(incompleteList[i]);
+        incompleteTasksHolder.appendChild(listItem);
+        bindTaskEvents(listItem, taskCompleted);
+      }
+
+      if ("completeTasks" in localStorage) {
+        completeList = JSON.parse(localStorage.getItem("completeTasks"));
+      } else {
+        localStorage.setItem("completeTasks", JSON.stringify(completeList));
+      }
+      for (let i = 0; i < completeList.length; i++) {
+        var listItem = createNewTaskElement(completeList[i]);
+        completedTasksHolder.appendChild(listItem);
+        bindTaskEvents(listItem, taskIncomplete);
+      }
+    },
+  };
+
   var taskInput = document.getElementById("new-task");
   var addButton = document.getElementsByTagName("button")[0];
   var incompleteTasksHolder = document.getElementById("incomplete-tasks");
   var completedTasksHolder = document.getElementById("completed-tasks");
-  const SET_ITEM = "set";
-  const SET_DELETE = "delete";
-  const SET_COMPLETE = "complete";
-  const SET_INCOMPLETE = "incomplete";
-  const SET_UPDATE = "updtae";
-  var SET_STORAGE_TODO = "todo";
-  var SET_STORAGE_COMPLETED = "completed";
+
+  var completeList = ["See the Doctor"];
+  var incompleteList = ["Pay Bills", "Go Shopping"];
+
   var createNewTaskElement = function (taskString, arr) {
-    listItem = document.createElement("li");
-    checkBox = document.createElement("input");
-    label = document.createElement("label");
-    editInput = document.createElement("input");
-    editButton = document.createElement("button");
-    deleteButton = document.createElement("button");
+    var listItem = document.createElement("li");
+    var checkBox = document.createElement("input");
+    var label = document.createElement("label");
+    var editInput = document.createElement("input");
+    var editButton = document.createElement("button");
+    var deleteButton = document.createElement("button");
 
     checkBox.type = "checkbox";
-    listItem.appendChild(checkBox);
     editInput.type = "text";
-    listItem.appendChild(label);
     editButton.innerText = "Edit";
-    listItem.appendChild(editInput);
     editButton.className = "edit";
-    listItem.appendChild(editButton);
     deleteButton.innerText = "Delete";
-    listItem.appendChild(deleteButton);
     deleteButton.className = "delete";
     label.innerText = taskString;
 
+    listItem.appendChild(checkBox);
+    listItem.appendChild(label);
+    listItem.appendChild(editInput);
+    listItem.appendChild(editButton);
+    listItem.appendChild(deleteButton);
     return listItem;
   };
 
-  var addTask = function (storageValue) {
+  var bindTaskEvents = function (taskListItem, checkBoxEventHandler) {
+    var checkBox = taskListItem.querySelectorAll("input[type=checkbox]")[0];
+    var editButton = taskListItem.querySelectorAll("button.edit")[0];
+    var deleteButton = taskListItem.querySelectorAll("button.delete")[0];
+    editButton.onclick = editTask;
+    deleteButton.onclick = deleteTask;
+    checkBox.onchange = checkBoxEventHandler;
+    if (checkBoxEventHandler == taskIncomplete) checkBox.checked = true;
+    else checkBox.checked = false;
+  };
+
+  var addTask = function () {
     var listItemName = taskInput.value;
-    if (listItemName.trim() == "") {
-      taskInput.classList.add("error");
-      return;
-    } else {
-      taskInput.classList.remove("error");
+    if (listItemName.trim() != "") {
+      incompleteList.push(listItemName);
+      localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
+      listItem = createNewTaskElement(listItemName);
+      incompleteTasksHolder.appendChild(listItem);
+      bindTaskEvents(listItem, taskCompleted);
+      taskInput.reset();
     }
-    listItem = createNewTaskElement(listItemName);
-    console.log(listItemName);
-    setLocalStorage(SET_ITEM, SET_STORAGE_TODO, listItemName);
-    incompleteTasksHolder.appendChild(listItem);
-    console.log(listItem);
-    bindTaskEvents(listItem, taskCompleted);
-    taskInput.value = "";
   };
 
   var editTask = function () {
     var listItem = this.parentNode;
     var editInput = listItem.querySelectorAll("input[type=text")[0];
-    var containsClass = listItem.classList.contains("editMode");
     var label = listItem.querySelector("label");
+    var button = listItem.getElementsByTagName("button")[0];
+    var containsClass = listItem.classList.contains("editMode");
+    var index1 = incompleteList.indexOf(label.innerText);
+    var index2 = completeList.indexOf(label.innerText);
+
+    console.log(containsClass);
     if (containsClass) {
       var listItemName = editInput.value;
       if (listItemName.trim() == "") {
         editInput.classList.add("error");
+        alert("Please fill out this field");
         return;
-      } else {
-        editInput.classList.remove("error");
-        setLocalStorage(
-          SET_UPDATE,
-          SET_STORAGE_TODO,
-          editInput.value,
-          label.innerText
-        );
       }
-    }
-    var button = listItem.getElementsByTagName("button")[0];
 
-    if (containsClass) {
+      if (listItem.parentNode == incompleteTasksHolder) {
+        incompleteList.splice(index1, 1);
+        incompleteList.splice(index1, 0, editInput.value);
+        localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
+      } else {
+        completeList.splice(index2, 1);
+        completeList.splice(index2, 0, editInput.value);
+        localStorage.setItem("completeTasks", JSON.stringify(completeList));
+      }
       label.innerText = editInput.value;
       button.innerText = "Edit";
     } else {
@@ -87,49 +120,58 @@
   var deleteTask = function (el) {
     var listItem = this.parentNode;
     var ul = listItem.parentNode;
+    var input_label = listItem.querySelector("label").innerText;
+    if (ul == incompleteTasksHolder) {
+      var index_label1 = incompleteList.indexOf(input_label);
+      incompleteList.splice(index_label1, 1);
+      localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
+    } else {
+      var index_label2 = completeList.indexOf(input_label);
+      completeList.splice(index_label2, 1);
+      console.log("inside delete func complete parent node", completeList);
+      localStorage.setItem("completeTasks", JSON.stringify(completeList));
+    }
     ul.removeChild(listItem);
-    setLocalStorage(
-      SET_DELETE,
-      SET_STORAGE_TODO,
-      listItem.querySelector("label").innerText
-    );
   };
 
   var taskCompleted = function (el) {
     var listItem = this.parentNode;
-    completedTasksHolder.appendChild(listItem);
+    var label = listItem.querySelector("label").innerText;
+
+    if (listItem.parentNode == incompleteTasksHolder) {
+      var idLabel = incompleteList.indexOf(label);
+      incompleteList.splice(idLabel, 1);
+    }
+    if (
+      !(label in incompleteList) &&
+      listItem.parentNode == incompleteTasksHolder
+    ) {
+      completeList.push(label);
+      completedTasksHolder.appendChild(listItem);
+    }
+    localStorage.setItem("completeTasks", JSON.stringify(completeList));
+    localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
     bindTaskEvents(listItem, taskIncomplete);
-    setLocalStorage(
-      SET_COMPLETE,
-      SET_STORAGE_TODO,
-      listItem.querySelector("label").innerText
-    );
   };
 
   var taskIncomplete = function () {
     var listItem = this.parentNode;
-    incompleteTasksHolder.appendChild(listItem);
-    bindTaskEvents(listItem, taskCompleted);
-    setLocalStorage(
-      SET_INCOMPLETE,
-      SET_STORAGE_TODO,
-      listItem.querySelector("label").innerText
-    );
-  };
-  //already given code
+    var label = listItem.querySelector("label").innerText;
+    if (listItem.parentNode == completedTasksHolder) {
+      var idLabel = completeList.indexOf(label);
+      completeList.splice(idLabel, 1);
+    }
+    if (
+      !(label in completeList) &&
+      listItem.parentNode == completedTasksHolder
+    ) {
+      incompleteList.push(label);
+      incompleteTasksHolder.appendChild(listItem);
+    }
 
-  var bindTaskEvents = function (taskListItem, checkBoxEventHandler, cb) {
-    var checkBox = taskListItem.querySelectorAll("input[type=checkbox]")[0];
-    var editButton = taskListItem.querySelectorAll("button.edit")[0];
-    var deleteButton = taskListItem.querySelectorAll("button.delete")[0];
-    editButton.onclick = editTask;
-    deleteButton.onclick = deleteTask;
-    checkBox.onchange = checkBoxEventHandler;
-    checkBox.onkeypress = function (e) {
-      if ((e.keyCode ? e.keyCode : e.which) == 13) {
-        checkBox.click();
-      }
-    };
+    localStorage.setItem("completeTasks", JSON.stringify(completeList));
+    localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
+    bindTaskEvents(listItem, taskCompleted);
   };
 
   addButton.addEventListener("click", addTask);
@@ -141,208 +183,6 @@
   for (var i = 0; i < completedTasksHolder.children.length; i++) {
     bindTaskEvents(completedTasksHolder.children[i], taskIncomplete);
   }
-  var toDoItem = [];
-  var completedItem = [];
-  //local storage function
-  function setLocalStorage(opertation, name, value, oldvalue = "") {
-    if (typeof Storage !== "undefined") {
-      if (opertation == SET_ITEM) {
-        var tasks = getLocalstorage();
-        var updatedtasks = [
-          ...tasks,
-          {
-            name: value,
-            completed: false,
-            editmode: false,
-            default: false,
-            deleted: false,
-          },
-        ];
-        //localStorage.setItem("tasks", JSON.stringify(updatedtasks));
-        setLocalstorage(updatedtasks);
-      } else if (opertation == SET_DELETE) {
-        getTheStoredTasks()(value, "deleted", true);
-      } else if (opertation == SET_COMPLETE) {
-        getTheStoredTasks()(value, "completed", true);
-      } else if (opertation == SET_INCOMPLETE) {
-        getTheStoredTasks()(value, "completed", false);
-      } else if (opertation == SET_UPDATE) {
-        var tasks = getLocalstorage();
-        tasks.find((val) => val.name == oldvalue).deleted = true;
-        var updatedtasks = [
-          ...tasks,
-          {
-            name: value,
-            completed: false,
-            editmode: false,
-            default: false,
-            deleted: false,
-          },
-        ];
-        setLocalstorage(updatedtasks);
-      }
-    } else {
-      document.getElementById("result").innerHTML = "Not possible";
-    }
-  }
 
-  document.addEventListener("DOMContentLoaded", function (event) {
-    var incompleteTasksHolder = document.getElementById("incomplete-tasks");
-    var completedTasksHolder = document.getElementById("completed-tasks");
-
-    if (
-      typeof Storage !== "undefined" &&
-      localStorage.getItem("tasks") != null
-    ) {
-      incompleteTasksHolder.innerHTML = "";
-      completedTasksHolder.innerHTML = "";
-
-      var todo = getLocalstorage();
-      if (todo) {
-        todoFiltered = todo.filter(
-          (val) => val.completed == false && val.deleted == false
-        );
-        todoFiltered.map((val) => {
-          listItem = createNewTaskElement(val.name);
-          incompleteTasksHolder.appendChild(listItem);
-          bindTaskEvents(listItem, taskCompleted);
-        });
-
-        completed = todo.filter(
-          (val) => val.completed == true && val.deleted == false
-        );
-        completed.map((val) => {
-          var completedCont = `<li><input type="checkbox" tabindex="0" checked><label>${val.name}</label><input type="text"><button class="edit">Edit</button><button class="delete">Delete</button></li>`;
-
-          var HTMLStr = stringToHTML(completedCont);
-          completedTasksHolder.appendChild(HTMLStr);
-          bindTaskEvents(HTMLStr, taskIncomplete);
-        });
-      }
-    } else {
-      console.log("localstorage not available");
-    }
-
-    if (getLocalstorage() == null) {
-      var tasks = [];
-      for (var i = 0; i < incompleteTasksHolder.children.length; i++) {
-        if (incompleteTasksHolder.children[i].classList.contains("editMode")) {
-          tasks = [
-            ...tasks,
-            {
-              name: document
-                .getElementById("incomplete-tasks")
-                .children[i].querySelector("label").innerText,
-              completed: false,
-              editmode: true,
-              default: true,
-              deleted: false,
-            },
-          ];
-          setLocalstorage(tasks);
-        } else {
-          tasks = [
-            ...tasks,
-            {
-              name: document
-                .getElementById("incomplete-tasks")
-                .children[i].querySelector("label").innerText,
-              completed: false,
-              editmode: false,
-              default: true,
-              deleted: false,
-            },
-          ];
-          setLocalstorage(tasks);
-        }
-      }
-
-      //complete task holder
-
-      for (var i = 0; i < completedTasksHolder.children.length; i++) {
-        if (completedTasksHolder.children[i].classList.contains("editMode")) {
-          tasks = [
-            ...tasks,
-            {
-              name: completedTasksHolder.children[i].querySelector("label")
-                .innerText,
-              completed: true,
-              editmode: true,
-              default: true,
-              deleted: false,
-            },
-          ];
-          setLocalstorage(tasks);
-        } else {
-          tasks = [
-            ...tasks,
-            {
-              name: completedTasksHolder.children[i].querySelector("label")
-                .innerText,
-              completed: true,
-              editmode: false,
-              default: true,
-              deleted: false,
-            },
-          ];
-          setLocalstorage(tasks);
-        }
-      }
-    } else {
-      var tasks = getLocalstorage();
-      var removeItem = [];
-      for (var i = 0; i < incompleteTasksHolder.children.length; i++) {
-        var listItem = incompleteTasksHolder.children[i];
-        var taskText = listItem.querySelector("label").innerText;
-
-        if (
-          tasks.findIndex((a) => a.name == taskText && a.completed == true) !=
-          -1
-        ) {
-          removeItem.push(listItem);
-          console.log("a", removeItem);
-        }
-      }
-      for (var j = 0; j < removeItem.length; j++) {
-        removeItem[j].remove();
-      }
-
-      var removeItemCompleted = [];
-      for (var i = 0; i < completedTasksHolder.children.length; i++) {
-        var listItem = completedTasksHolder.children[i];
-        var taskText = listItem.querySelector("label").innerText;
-        if (
-          tasks.findIndex((a) => a.name == taskText && a.completed == false) !=
-          -1
-        ) {
-          removeItemCompleted.push(listItem);
-          console.log(removeItemCompleted);
-          console.log("a", a);
-        }
-      }
-      for (var j = 0; j < removeItemCompleted.length; j++) {
-        removeItemCompleted[j].remove();
-      }
-    }
-  });
-
-  var stringToHTML = function (str) {
-    var parser = new DOMParser();
-    var doc = parser.parseFromString(str, "text/html");
-    console.log(doc.body.getElementsByTagName("li")[0]);
-    return doc.body.getElementsByTagName("li")[0];
-  };
-  function getTheStoredTasks() {
-    var tasks = getLocalstorage();
-    return (value, node, valuetobe) => {
-      tasks.find((val) => val.name == value)[node] = valuetobe;
-      setLocalstorage(tasks);
-    };
-  }
-  function setLocalstorage(tasks) {
-    localStorage.setItem("tasks", JSON.stringify(tasks));
-  }
-  function getLocalstorage() {
-    return JSON.parse(localStorage.getItem("tasks"));
-  }
+  features.onload();
 })();

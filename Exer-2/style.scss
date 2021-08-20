@@ -1,48 +1,78 @@
-/* Basic Style */
 html body {
   background: #ffffff;
   color: #333;
   font-family: Lato, sans-serif;
+
+  .container {
+    display: block;
+    width: 375px;
+    margin: 5% auto 0;
+  }
 }
 
-html body .container {
-  display: flex;
-  margin: 0 auto;
-  justify-content: space-around;
-}
-
-html body ul {
+ul {
   margin: 0px;
-  padding: 0;
+  padding: 0px;
+
+  li {
+    input[type="text"] {
+      display: none;
+    }
+
+    &.editMode {
+      input[type="text"] {
+        display: block;
+        display: -webkit-inline-box;
+        display: -ms-inline-flexbox;
+        display: inline-flex;
+      }
+
+      label {
+        display: none;
+      }
+    }
+  }
 }
 
-html body li,
-html body h3 {
+li {
   clear: both;
   list-style: none;
+  overflow: hidden;
+  padding: 20px 0px;
+  border-bottom: 1px solid #eee;
+
+  * {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
+  > {
+    input[type="checkbox"] {
+      margin: 0 10px;
+      position: relative;
+    }
+
+    label {
+      font-size: 18px;
+      line-height: 40px;
+      width: 200px;
+      padding: 0 0 0 11px;
+    }
+
+    input[type="text"] {
+      width: 190px;
+    }
+
+    .delete:hover {
+      color: #cf2323;
+    }
+  }
 }
 
-/*html body input, html body button {
-    outline: none;
-  }*/
-html body button {
-  background: none;
-  border: 0px;
-  color: #888888;
-  font-size: 15px;
-  width: 60px;
-  margin: 10px 0 0;
-  font-family: Lato, sans-serif;
-  cursor: pointer;
-}
-
-html body button :hover {
-  color: #333;
-}
-
-/* Heading */
-html body h3,
-html body label[for="new-task"] {
+h3 {
+  clear: both;
+  list-style: none;
   color: #333333;
   font-weight: 700;
   font-size: 15px;
@@ -52,146 +82,80 @@ html body label[for="new-task"] {
   text-transform: uppercase;
 }
 
-html body input[type="text"] {
-  margin: 0;
-  font-size: 18px;
-  line-height: 18px;
-  height: 18px;
-  padding: 10px;
-  border: 1px solid #ddd;
-  background: #fff;
-  border-radius: 6px;
+button {
+  background: none;
+  border: 0px;
+  color: #888888;
+  font-size: 15px;
+  width: 60px;
+  margin: 10px 0 0;
   font-family: Lato, sans-serif;
-  color: #888;
+  cursor: pointer;
+
+  &:hover {
+    color: #333;
+  }
 }
 
-html body input[type="text"] :focus {
-  color: #333;
-}
-
-/* New Task */
-html body input#new-task {
-  width: 318px;
-}
-
-.additionbutton:hover {
-  color: #0fc57c;
-}
-
-/* Task list */
-html body li {
-  overflow: hidden;
-  padding: 20px 0px;
-  border-bottom: 1px solid #eee;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -ms-flex-wrap: wrap;
-  flex-wrap: wrap;
-  -webkit-box-pack: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-}
-
-html body li > input[type="checkbox"] {
-  margin: 0 10px;
-  position: relative;
-  top: 15px;
-}
-
-html body li > label {
-  font-size: 18px;
-  line-height: 40px;
-  width: 237px;
-  padding: 0 0 0 11px;
-}
-
-html body li > input[type="text"] {
-  width: 226px;
-}
-
-.delete:hover {
-  color: #cf2323;
-}
-
-/* Completed */
-html body #completed-tasks label {
-  text-decoration: line-through;
-  color: #888;
-}
-
-/* Edit Task */
-html body ul li input[type="text"] {
-  display: none;
-}
-
-html body ul li.editMode input[type="text"] {
-  display: block;
-}
-
-html body ul li.editMode label {
-  display: none;
-}
-
-#todolistForm .error {
-  border: 1px solid red;
-}
-
-#new-task-label {
+label[for="new-task"] {
+  color: #333333;
+  font-weight: 700;
+  font-size: 15px;
+  border-bottom: 2px solid #333;
+  padding: 30px 0 10px;
+  margin: 0px;
+  text-transform: uppercase;
   display: block;
   margin: 0 0 20px;
 }
 
-fieldset {
-  border: none;
+input {
+  &[type="text"] {
+    margin: 0;
+    font-size: 18px;
+    line-height: 18px;
+    height: 18px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    background: #fff;
+    border-radius: 6px;
+    font-family: Lato, sans-serif;
+    color: #888;
+
+    &:focus {
+      color: #333;
+    }
+  }
+
+  &#new-task {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+    width: 280px;
+  }
 }
 
-@media only screen and (max-width: 400px) {
-  html body .container {
-    width: calc(100% - 20px);
-  }
-  html body li {
-    -webkit-box-pack: start;
-    -ms-flex-pack: start;
-    justify-content: flex-start;
-  }
-  html body input#new-task {
+form > button:hover {
+  color: #0fc57c;
+}
+
+#completed-tasks label {
+  text-decoration: line-through;
+  color: #888;
+}
+
+#incomplete-tasks {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 375px) {
+  .container {
     width: 100%;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-  }
-  html body input[type="text"] {
-    height: 35px;
-  }
-}
-
-@media only screen and (min-width: 375px) {
-  html body .container {
-    width: calc(100% - 40px);
-    margin: auto auto;
-    max-width: 600px;
-  }
-  html body li {
-    -webkit-box-pack: start;
-    -ms-flex-pack: start;
-    justify-content: flex-start;
-  }
-  html body li > label,
-  html body li > input[type="text"] {
-    width: 272px;
-  }
-}
-
-/*@media only screen and (max-width: 400px) {
-	html body li>label, html body li>input[type="text"] {
-		width: 80%;
-	}
-}*/
-@media only screen and (min-width: 310px) and (max-width: 600px) {
-  html body li > input[type="text"] {
-    width: 70%;
-  }
-  html body li > label {
-    width: 80%;
   }
 }
