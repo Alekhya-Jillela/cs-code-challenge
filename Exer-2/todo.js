@@ -7,6 +7,7 @@
         localStorage.setItem("incompleteTasks", JSON.stringify(incompleteList));
       }
       for (let i = 0; i < incompleteList.length; i++) {
+        //update
         var listItem = createNewTaskElement(incompleteList[i]);
         incompleteTasksHolder.appendChild(listItem);
         bindTaskEvents(listItem, taskCompleted);
@@ -94,7 +95,7 @@
       var listItemName = editInput.value;
       if (listItemName.trim() == "") {
         editInput.classList.add("error");
-        alert("Please fill out this field");
+        alert("Empty To Do can't be submitted");
         return;
       }
 

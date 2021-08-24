@@ -18,7 +18,6 @@ fetch(url).then(response => response.json()).then(data => {
 obj ={data};
 createHtml(obj)});}
 function createHtml(ourData){
-  debugger;
   ourData.data.map((item) => {
     item.createdAt = new Date(item.createdAt).toLocaleDateString("en-US");
     return item;
