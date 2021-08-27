@@ -8,6 +8,8 @@
       }
       for (let i = 0; i < incompleteList.length; i++) {
         //update
+
+        
         var listItem = createNewTaskElement(incompleteList[i]);
         incompleteTasksHolder.appendChild(listItem);
         bindTaskEvents(listItem, taskCompleted);
